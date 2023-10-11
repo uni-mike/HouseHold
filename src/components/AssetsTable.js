@@ -149,13 +149,10 @@ const handleSaveClick = async (row) => {
             />
           </>
         ) : (
-          <>
-            <Button
-              icon={<DeleteOutlined />}
-              onClick={() => handleDeleteClick(row.id)}
-            />
-            <Button icon={<SaveOutlined />} onClick={() => setEditRow(row)} />
-          </>
+            <>
+              <Button icon={<SaveOutlined />} onClick={() => setEditRow(row)} style={{ marginRight: '5px' }} />
+              <Button icon={<DeleteOutlined />} onClick={() => handleDeleteClick(row.id)} />
+            </>
         );
       },
     },
@@ -163,9 +160,14 @@ const handleSaveClick = async (row) => {
 
   return (
     <div>
-      <Button icon={<PlusOutlined />} onClick={handleAddNewItem}>
-        Add New Item
-      </Button>
+        <Button
+          icon={<PlusOutlined />}
+          onClick={handleAddNewItem}
+          type="primary"
+          style={{ marginBottom: '10px' }}
+        >
+          Add New Item
+        </Button>
       <Table dataSource={rows} columns={columns} rowKey="id" />
     </div>
   );
