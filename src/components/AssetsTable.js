@@ -11,45 +11,39 @@ export default function AssetsTable({ assets, onUpdate }) {
     setRows(assets);
   }, [assets]);
 
-  const handleSaveClick = (row) => {
-    if (row.id) {
-      axios.put(`/assets/${row.id}`, row).then(() => {
-        setEditRow(null);
-        onUpdate([...rows]);
-      });
-    } else {
-      axios.post('/assets', row).then((response) => {
-        const newRows = rows.filter(r => r.id !== null);
-        newRows.push(response.data);
-        setRows(newRows);
-        onUpdate(newRows);
-        setEditRow(null);
-      });
-    }
-  };
+    const handleSaveClick = async (row) => {
+      let updatedRows = [...rows];
+      if (row.id !== null) {
+        await axios.put(`/assets/${row.id}`, row);
+      } else {
+        const response = await axios.post('/assets', row);
+        row.id = response.data.id;
+        updatedRows = updatedRows.map(r => (r.id === null ? row : r));
+      }
+      setRows(updatedRows);
+      onUpdate(updatedRows);
+      setEditRow(null);
+    };
 
-  const handleDeleteClick = (id) => {
-    axios.delete(`/assets/${id}`).then(() => {
-      const updatedAssets = rows.filter((asset) => asset.id !== id);
-      setRows(updatedAssets);
-      onUpdate(updatedAssets);
-    });
-  };
+    const handleDeleteClick = async (id) => {
+      await axios.delete(`/assets/${id}`);
+      const updatedRows = rows.filter(r => r.id !== id);
+      setRows(updatedRows);
+      onUpdate(updatedRows);
+    };
 
   const handleCancelClick = () => {
-    setRows(rows.filter(r => r.id !== null));
     setEditRow(null);
   };
 
-  const handleCellValueChange = (e, fieldName) => {
-    const value = e.target.value;
+  const handleCellValueChange = (value, fieldName) => {
     setEditRow({ ...editRow, [fieldName]: value });
   };
 
   const handleAddNewItem = () => {
-    const newItem = { id: null, name: '', value: '', description: '' };
-    setRows([...assets, newItem]);
-    setEditRow(newItem);
+    const newRow = { id: null, name: '', value: '', description: '' };
+    setRows([...rows, newRow]);
+    setEditRow(newRow);
   };
 
   const columns = [
@@ -63,11 +57,8 @@ export default function AssetsTable({ assets, onUpdate }) {
       dataIndex: 'name',
       key: 'name',
       render: (text, row) => {
-        return editRow && (editRow.id === row.id || editRow.id === null) ? (
-          <Input
-            value={editRow.name}
-            onChange={(e) => handleCellValueChange(e, 'name')}
-          />
+        return editRow?.id === row.id ? (
+          <Input value={editRow.name} onChange={(e) => handleCellValueChange(e.target.value, 'name')} />
         ) : (
           text
         );
@@ -78,11 +69,8 @@ export default function AssetsTable({ assets, onUpdate }) {
       dataIndex: 'value',
       key: 'value',
       render: (text, row) => {
-        return editRow && (editRow.id === row.id || editRow.id === null) ? (
-          <Input
-            value={editRow.value}
-            onChange={(e) => handleCellValueChange(e, 'value')}
-          />
+        return editRow?.id === row.id ? (
+          <Input value={editRow.value} onChange={(e) => handleCellValueChange(e.target.value, 'value')} />
         ) : (
           text
         );
@@ -93,11 +81,8 @@ export default function AssetsTable({ assets, onUpdate }) {
       dataIndex: 'description',
       key: 'description',
       render: (text, row) => {
-        return editRow && (editRow.id === row.id || editRow.id === null) ? (
-          <Input
-            value={editRow.description}
-            onChange={(e) => handleCellValueChange(e, 'description')}
-          />
+        return editRow?.id === row.id ? (
+          <Input value={editRow.description} onChange={(e) => handleCellValueChange(e.target.value, 'description')} />
         ) : (
           text
         );
@@ -107,15 +92,15 @@ export default function AssetsTable({ assets, onUpdate }) {
       title: 'Actions',
       key: 'actions',
       render: (text, row) => {
-        return editRow && (editRow.id === row.id || editRow.id === null) ? (
+        return editRow?.id === row.id ? (
           <>
             <Button icon={<SaveOutlined />} onClick={() => handleSaveClick(editRow)} />
             <Button icon={<CloseCircleOutlined />} onClick={handleCancelClick} />
           </>
         ) : (
           <>
-            <Button icon={<SaveOutlined />} onClick={() => handleSaveClick(row)} />
             <Button icon={<DeleteOutlined />} onClick={() => handleDeleteClick(row.id)} />
+            <Button icon={<SaveOutlined />} onClick={() => setEditRow(row)} />
           </>
         );
       },
