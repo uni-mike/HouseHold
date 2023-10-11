@@ -16,41 +16,42 @@ export default function AssetsTable({ assets, onUpdate }) {
     setRows(assets);
   }, [assets]);
 
-  const handleSaveClick = async (row) => {
-    let updatedRows = [...rows];
-    const originalRow = updatedRows.find((r) => r.id === row.id);
+const handleSaveClick = async (row) => {
+  let updatedRows = [...rows];
+  const originalRow = updatedRows.find(r => r.id === row.id);
 
+  // Optimistically update the UI
+  if (row.id !== null) {
+    updatedRows = updatedRows.map(r => (r.id === row.id ? row : r));
+  }
+
+  setRows(updatedRows);
+  onUpdate(updatedRows);
+
+  try {
     if (row.id !== null) {
-      updatedRows = updatedRows.map((r) => (r.id === row.id ? row : r));
+      await axios.put(`/assets/${row.id}`, row);
     } else {
-      updatedRows.push(row);
+      const response = await axios.post('/assets', row);
+      row.id = response.data.id;
+      updatedRows = updatedRows.map(r => (r.id === null ? row : r));
+      setRows(updatedRows); // Update the rows with new ID
+      onUpdate(updatedRows); // Notify the parent component
+    }
+  } catch (error) {
+    // Roll back the changes in case of an error
+    if (row.id !== null && originalRow) {
+      updatedRows = updatedRows.map(r => (r.id === row.id ? originalRow : r));
+    } else {
+      updatedRows = updatedRows.filter(r => r.id !== null);
     }
     setRows(updatedRows);
     onUpdate(updatedRows);
+    console.error('API call failed', error);
+  }
 
-    try {
-      if (row.id !== null) {
-        await axios.put(`/assets/${row.id}`, row);
-      } else {
-        const response = await axios.post("/assets", row);
-        row.id = response.data.id;
-        updatedRows = updatedRows.map((r) => (r.id === null ? row : r));
-      }
-    } catch (error) {
-      if (row.id !== null && originalRow) {
-        updatedRows = updatedRows.map((r) =>
-          r.id === row.id ? originalRow : r
-        );
-      } else {
-        updatedRows = updatedRows.filter((r) => r.id !== null);
-      }
-      setRows(updatedRows);
-      onUpdate(updatedRows);
-      console.error("API call failed", error);
-    }
-
-    setEditRow(null);
-  };
+  setEditRow(null);
+};
 
   const handleDeleteClick = async (id) => {
     await axios.delete(`/assets/${id}`);
