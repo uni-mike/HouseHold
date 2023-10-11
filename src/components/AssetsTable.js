@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from "react";
-import axios from "./axiosConfig";
-import { Table, Button, Input } from "antd";
+import React, { useState, useEffect } from 'react';
+import axios from './axiosConfig';
+import { Table, Button, Input, Modal } from 'antd';
 import {
   PlusOutlined,
   SaveOutlined,
   CloseCircleOutlined,
   DeleteOutlined,
-} from "@ant-design/icons";
+  QrcodeOutlined,
+} from '@ant-design/icons';
 
 export default function AssetsTable({ assets, onUpdate }) {
   const [rows, setRows] = useState(assets);
   const [editRow, setEditRow] = useState(null);
+  const [qrModalVisible, setQRModalVisible] = useState(false);
+  const [currentQRCode, setCurrentQRCode] = useState(null);
 
   useEffect(() => {
     setRows(assets);
@@ -52,6 +55,24 @@ const handleSaveClick = async (row) => {
 
   setEditRow(null);
 };
+
+const handleQRClick = async (id) => {
+  try {
+    const response = await axios.get(`/getQR/${id}`, { responseType: 'arraybuffer' });
+    const base64 = btoa(
+      new Uint8Array(response.data).reduce(
+        (data, byte) => data + String.fromCharCode(byte),
+        '',
+      ),
+    );
+    setCurrentQRCode(`data:;base64,${base64}`);
+  } catch (error) {
+    console.error('Could not fetch QR code', error);
+  }
+  setQRModalVisible(true);
+};
+
+
 
   const handleDeleteClick = async (id) => {
     await axios.delete(`/assets/${id}`);
@@ -134,41 +155,59 @@ const handleSaveClick = async (row) => {
       ),
     },
     {
-      title: "Actions",
-      key: "actions",
-      render: (text, row) => {
-        return editRow?.id === row.id ? (
-          <>
-            <Button
-              icon={<SaveOutlined />}
-              onClick={() => handleSaveClick(editRow)}
-            />
-            <Button
-              icon={<CloseCircleOutlined />}
-              onClick={handleCancelClick}
-            />
-          </>
-        ) : (
+      title: 'Actions',
+      key: 'actions',
+      width : "15%",
+      render: (text, row) => (
+        <>
+          {editRow?.id === row.id ? (
             <>
-              <Button icon={<SaveOutlined />} onClick={() => setEditRow(row)} style={{ marginRight: '5px' }} />
-              <Button icon={<DeleteOutlined />} onClick={() => handleDeleteClick(row.id)} />
+              <Button icon={<SaveOutlined />} onClick={() => handleSaveClick(editRow)} />
+              <Button icon={<CloseCircleOutlined />} onClick={handleCancelClick} />
             </>
-        );
-      },
+          ) : (
+            <>
+              <Button
+                icon={<SaveOutlined />}
+                onClick={() => setEditRow(row)}
+                style={{ marginRight: '5px' }}
+              />
+              <Button icon={<DeleteOutlined />} onClick={() => handleDeleteClick(row.id)} style={{ marginRight: '5px' }}/>
+              <Button icon={<QrcodeOutlined />} onClick={() => handleQRClick(row.id)} />
+            </>
+          )}
+        </>
+      ),
     },
   ];
 
   return (
     <div>
-        <Button
-          icon={<PlusOutlined />}
-          onClick={handleAddNewItem}
-          type="primary"
-          style={{ marginBottom: '10px' }}
-        >
-          Add New Item
-        </Button>
-      <Table dataSource={rows} columns={columns} rowKey="id" />
+      <Button
+        icon={<PlusOutlined />}
+        onClick={handleAddNewItem}
+        type='primary'
+        style={{ marginBottom: '10px' }}
+      >
+        Add New Item
+      </Button>
+      <Table dataSource={rows} columns={columns} rowKey='id' />
+
+<Modal
+  title='QR Code'
+  visible={qrModalVisible}
+  onCancel={() => setQRModalVisible(false)}
+  footer={null}
+  width={340}
+  bodyStyle={{ padding: 0 }}
+>
+  <div className="qr-modal">
+    {currentQRCode ? <img className="qr-image" src={currentQRCode} alt='QR Code' /> : 'Loading'}
+  </div>
+</Modal>
+
+
+
     </div>
   );
 }
