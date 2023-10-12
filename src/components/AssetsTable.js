@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from './axiosConfig';
-import { Table, Button, Input, Modal } from 'antd';
+import { Table, Button, Input, Modal, message } from 'antd';
 import {
   PlusOutlined,
   SaveOutlined,
@@ -33,14 +33,19 @@ const handleSaveClick = async (row) => {
   try {
     if (row.id !== null) {
       await axios.put(`/assets/${row.id}`, row);
+       message.success('Asset updated successfully.');
     } else {
       const response = await axios.post('/assets', row);
       row.id = response.data.id;
       updatedRows = updatedRows.map(r => (r.id === null ? row : r));
       setRows(updatedRows);
       onUpdate(updatedRows);
+      // Toast notification for successful creation
+      message.success('Asset created successfully.');
     }
   } catch (error) {
+    // Toast notification for any error
+    message.error('Error while processing the asset. Please try again.');
     if (row.id !== null && originalRow) {
       updatedRows = updatedRows.map(r => (r.id === row.id ? originalRow : r));
     } else {
@@ -70,14 +75,29 @@ const handleQRClick = async (id) => {
   setQRModalVisible(true);
 };
 
-
-
-  const handleDeleteClick = async (id) => {
-    await axios.delete(`/assets/${id}`);
-    const updatedRows = rows.filter((r) => r.id !== id);
-    setRows(updatedRows);
-    onUpdate(updatedRows);
-  };
+const handleDeleteClick = (id) => {
+    Modal.confirm({
+        title: 'Are you sure you want to delete this asset?',
+        content: 'This action cannot be undone.',
+        okText: 'Yes',
+        okType: 'danger',
+        cancelText: 'No',
+        onOk: async () => {
+            try {
+                await axios.delete(`/assets/${id}`);
+                const updatedRows = rows.filter((r) => r.id !== id);
+                setRows(updatedRows);
+                onUpdate(updatedRows);
+                message.success('Asset deleted successfully.');
+            } catch (error) {
+                message.error('Error deleting asset. Please try again.');
+            }
+        },
+        onCancel() {
+            // Optional: If you want to perform any action on "Cancel"
+        }
+    });
+};
 
   const handleCancelClick = () => {
     setEditRow(null);
