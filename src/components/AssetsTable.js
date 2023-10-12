@@ -195,7 +195,7 @@ const handleQRClick = async (id) => {
 
         <Modal
           title="QR Code"
-          visible={qrModalVisible}
+          open={qrModalVisible}
           onCancel={() => setQRModalVisible(false)}
           footer={null}
           width={340}

@@ -12,26 +12,38 @@ const { Sider } = Layout;
 const Sidebar = () => {
   const navigate = useNavigate();
 
+  const menuItems = [
+    {
+      key: '1',
+      icon: <DatabaseOutlined />,
+      label: 'Assets', // Use label instead of text
+      onClick: () => navigate('/assets'),
+    },
+    {
+      key: '2',
+      icon: <UserOutlined />,
+      label: 'Users', // Use label instead of text
+      onClick: () => navigate('/users'),
+    },
+    {
+      key: '3',
+      icon: <LogoutOutlined />,
+      label: 'Logout', // Use label instead of text
+      onClick: () => {
+        localStorage.removeItem('userToken');
+        navigate('/login');
+      },
+    },
+  ];
+
   return (
     <Sider width={200} className="site-layout-background">
       <Menu
         mode="inline"
         defaultSelectedKeys={['1']}
         style={{ height: '100%', borderRight: 0 }}
-      >
-        <Menu.Item key="1" icon={<DatabaseOutlined />} onClick={() => navigate('/assets')}>
-          Assets
-        </Menu.Item>
-        <Menu.Item key="2" icon={<UserOutlined />} onClick={() => navigate('/users')}>
-          Users
-        </Menu.Item>
-        <Menu.Item key="3" icon={<LogoutOutlined />} onClick={() => {
-          localStorage.removeItem('userToken');
-          navigate('/login');
-        }}>
-          Logout
-        </Menu.Item>
-      </Menu>
+        items={menuItems}
+      />
     </Sider>
   );
 };
