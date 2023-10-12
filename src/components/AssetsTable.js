@@ -193,20 +193,18 @@ const handleQRClick = async (id) => {
       </Button>
       <Table dataSource={rows} columns={columns} rowKey='id' />
 
-<Modal
-  title='QR Code'
-  visible={qrModalVisible}
-  onCancel={() => setQRModalVisible(false)}
-  footer={null}
-  width={340}
-  bodyStyle={{ padding: 0 }}
->
-  <div className="qr-modal">
-    {currentQRCode ? <img className="qr-image" src={currentQRCode} alt='QR Code' /> : 'Loading'}
-  </div>
-</Modal>
-
-
+        <Modal
+          title="QR Code"
+          visible={qrModalVisible}
+          onCancel={() => setQRModalVisible(false)}
+          footer={null}
+          width={340}
+          styles={{ body: { padding: 0 } }}
+        >
+          <div className="qr-modal">
+            {currentQRCode ? <img className="qr-image" src={currentQRCode} alt="QR Code" /> : "Loading"}
+          </div>
+        </Modal>
 
     </div>
   );
