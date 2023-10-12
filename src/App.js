@@ -1,11 +1,14 @@
 import React from 'react';
 import Router from './Router';
+import { AuthProvider } from './AuthContext';
 
 function App() {
   return (
-    <div className="App">
-      <Router />
-    </div>
+    <AuthProvider>
+      <div className="App">
+        <Router />
+      </div>
+    </AuthProvider>
   );
 }
 
