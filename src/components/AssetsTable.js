@@ -196,7 +196,7 @@ const handleQRClick = async (id) => {
           open={qrModalVisible}
           onCancel={() => setQRModalVisible(false)}
           footer={null}
-          width={340}
+          width={420}
           styles={{ body: { padding: 0 } }}
         >
           <div className="qr-modal">
