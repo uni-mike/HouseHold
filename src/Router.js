@@ -16,9 +16,11 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Layout>
-        <Sider>
-          <Sidebar />
-        </Sider>
+        {currentUser && (
+          <Sider>
+            <Sidebar />
+          </Sider>
+        )}
         <Content>
           <Routes>
             <Route path="/login" element={<LoginForm />} />

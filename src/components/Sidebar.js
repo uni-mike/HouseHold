@@ -39,12 +39,11 @@ const Sidebar = () => {
   return (
     <Sider
       width={200}
-      className="site-layout-background"
       theme="light"
       style={{
         position: "fixed",
         left: 0,
-        height: "100%",
+        height: "100vh",
         overflowY: "auto",
       }}
     >
@@ -55,9 +54,9 @@ const Sidebar = () => {
         items={menuItems}
       />
       <style>
-        {`
-          .ant-layout-sider-children {
-            background: transparent;
+{`
+          .ant-layout-sider {
+            background: transparent !important;
           }
         `}
       </style>
