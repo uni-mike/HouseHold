@@ -16,19 +16,19 @@ const Sidebar = () => {
     {
       key: '1',
       icon: <DatabaseOutlined />,
-      label: 'Assets', // Use label instead of text
+      label: 'Assets',
       onClick: () => navigate('/assets'),
     },
     {
       key: '2',
       icon: <UserOutlined />,
-      label: 'Users', // Use label instead of text
+      label: 'Users',
       onClick: () => navigate('/users'),
     },
     {
       key: '3',
       icon: <LogoutOutlined />,
-      label: 'Logout', // Use label instead of text
+      label: 'Logout',
       onClick: () => {
         localStorage.removeItem('userToken');
         navigate('/login');
@@ -37,11 +37,20 @@ const Sidebar = () => {
   ];
 
   return (
-    <Sider width={200} className="site-layout-background">
+    <Sider
+      width={200}
+      className="site-layout-background"
+      style={{
+        position: "fixed",
+        left: 0,
+        height: "100%",
+        overflowY: "auto",
+      }}
+    >
       <Menu
         mode="inline"
-        defaultSelectedKeys={['1']}
-        style={{ height: '100%', borderRight: 0 }}
+        defaultSelectedKeys={["1"]}
+        style={{ borderRight: 0 }}
         items={menuItems}
       />
     </Sider>
@@ -49,3 +58,8 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
+
+
+
+

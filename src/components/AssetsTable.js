@@ -23,7 +23,6 @@ const handleSaveClick = async (row) => {
   let updatedRows = [...rows];
   const originalRow = updatedRows.find(r => r.id === row.id);
 
-  // Optimistically update the UI
   if (row.id !== null) {
     updatedRows = updatedRows.map(r => (r.id === row.id ? row : r));
   }
@@ -38,11 +37,10 @@ const handleSaveClick = async (row) => {
       const response = await axios.post('/assets', row);
       row.id = response.data.id;
       updatedRows = updatedRows.map(r => (r.id === null ? row : r));
-      setRows(updatedRows); // Update the rows with new ID
-      onUpdate(updatedRows); // Notify the parent component
+      setRows(updatedRows);
+      onUpdate(updatedRows);
     }
   } catch (error) {
-    // Roll back the changes in case of an error
     if (row.id !== null && originalRow) {
       updatedRows = updatedRows.map(r => (r.id === row.id ? originalRow : r));
     } else {

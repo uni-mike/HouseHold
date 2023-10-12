@@ -25,24 +25,19 @@ export default function UsersTable() {
 
 const handleSaveClick = async () => {
   if (editRow.id === null) {
-    // Register a new user optimistically (locally)
     const newRow = { id: null, username: '', email: '', password: '' };
     setUsers([...users, newRow]);
 
-    // Make the API call to create the new user
     axios.post('/users/register', editRow)
       .then(response => {
-        // Update the local state with the response data
         setUsers(users.map(user => (user.id === newRow.id ? response.data : user)));
         setEditRow(null);
       })
       .catch(error => {
         console.error('Error registering user:', error);
-        // If there's an error, remove the optimistic update
         setUsers(users.filter(user => user.id !== newRow.id));
       });
   } else {
-    // Update an existing user
     axios.put(`/users/update/${editRow.id}`, editRow)
       .then(response => {
         setUsers(users.map(user => (user.id === editRow.id ? response.data : user)));
