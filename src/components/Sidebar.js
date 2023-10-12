@@ -40,6 +40,7 @@ const Sidebar = () => {
     <Sider
       width={200}
       className="site-layout-background"
+      theme="light"
       style={{
         position: "fixed",
         left: 0,
@@ -53,13 +54,15 @@ const Sidebar = () => {
         style={{ borderRight: 0 }}
         items={menuItems}
       />
+      <style>
+        {`
+          .ant-layout-sider-children {
+            background: transparent;
+          }
+        `}
+      </style>
     </Sider>
   );
 };
 
 export default Sidebar;
-
-
-
-
-

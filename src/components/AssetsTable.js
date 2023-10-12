@@ -185,7 +185,7 @@ const handleQRClick = async (id) => {
         icon={<PlusOutlined />}
         onClick={handleAddNewItem}
         type='primary'
-        style={{ marginBottom: '10px' }}
+        style={{ marginBottom: '20px' }}
       >
         Add New Item
       </Button>

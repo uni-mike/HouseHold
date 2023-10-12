@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from './axiosConfig';
 import AssetsTable from './AssetsTable';
+import { ConfigProvider } from 'antd';
 
 function Assets() {
   const [assets, setAssets] = useState([]);
@@ -18,7 +19,9 @@ function Assets() {
   return (
     <div>
       <h1>Assets</h1>
-      <AssetsTable assets={assets} onUpdate={updateAssets} />
+      <ConfigProvider theme="light">
+        <AssetsTable assets={assets} onUpdate={updateAssets} />
+      </ConfigProvider>
     </div>
   );
 }

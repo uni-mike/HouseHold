@@ -1,10 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { ConfigProvider } from 'antd';
 import App from './App';
 
+const theme = 'light';
+
 ReactDOM.render(
-  <React.StrictMode>
+  <ConfigProvider theme={theme}>
     <App />
-  </React.StrictMode>,
+  </ConfigProvider>,
   document.getElementById('root')
 );
